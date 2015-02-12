@@ -9,21 +9,19 @@
 
 #import <Foundation/Foundation.h>
 
-enum {
+
+typedef NS_ENUM(NSInteger, FileHashAlgorithm) {
     FileHashAlgorithmMD5 = 1,
     FileHashAlgorithmSHA1 = 2,
     FileHashAlgorithmSHA512 = 3
 };
 
-typedef NSInteger FileHashAlgorithm;
 
-enum {
+typedef NS_OPTIONS(NSUInteger, ObjectiveCDMDownloadTaskStatus) {
     kUnitStringBinaryUnits     = 1 << 0,
     kUnitStringOSNativeUnits   = 1 << 1,
     kUnitStringLocalizedFormat = 1 << 2
 };
-
-typedef NSInteger ObjectiveCDMDownloadTaskStatus;
 
 @class ObjectiveCDMDownloadTask;
 
@@ -41,24 +39,24 @@ typedef NSInteger ObjectiveCDMDownloadTaskStatus;
 
 @property(nonatomic, assign) BOOL completed;
 
-- (instancetype) initWithFileHashAlgorithm:(FileHashAlgorithm)fileHashAlgorithmInput;
+- (instancetype) initWithFileHashAlgorithm:(FileHashAlgorithm)fileHashAlgorithmInput NS_DESIGNATED_INITIALIZER;
 - (ObjectiveCDMDownloadTask *) addTask:(NSDictionary *)taskInfo;
 - (BOOL) handleDownloadedFileAt:(NSURL *)downloadedFileLocation forDownloadURL:(NSString *)downloadURL;
-- (NSArray *)downloadObjects;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSArray *downloadObjects;
 - (void) setDownloadingSessionTo:(NSURLSession *)inputSession;
 - (ObjectiveCDMDownloadTask *)downloadInfoOfTaskUrl:(NSString *)url;
 
 - (void) updateCompleteStatus;
 - (ObjectiveCDMDownloadTask *) updateProgressOfDownloadURL:(NSString *)url withProgress:(float)percentage withTotalBytesWritten:(int64_t)totalBytesWritten;
 - (ObjectiveCDMDownloadTask *) captureDownloadingInfoOfDownloadTask:(NSURLSessionDownloadTask *)downloadTask;
-- (NSDictionary *) totalBytesWrittenAndReceived;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSDictionary *totalBytesWrittenAndReceived;
 - (void) startDownloadTask:(ObjectiveCDMDownloadTask *)downloadTaskInfo;
 - (void) continueAllInCompletedDownloadTask;
 - (void) suspendAllOnGoingDownloadTask;
 - (void) resumeAllSuspendedTasks;
-- (BOOL) isDownloading;
+@property (NS_NONATOMIC_IOSONLY, getter=isDownloading, readonly) BOOL downloading;
 - (void) redownloadRequestOfTask:(ObjectiveCDMDownloadTask *)downloadTaskInfo;
 
-- (int64_t) downloadRate;
-- (double) elapsedSeconds;
+@property (NS_NONATOMIC_IOSONLY, readonly) int64_t downloadRate;
+@property (NS_NONATOMIC_IOSONLY, readonly) double elapsedSeconds;
 @end

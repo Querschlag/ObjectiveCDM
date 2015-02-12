@@ -28,25 +28,28 @@
 @property(nonatomic, retain) NSError* error;
 @property(nonatomic, retain) NSString* lastErrorMessage;
 @property(nonatomic, retain) NSString* identifier;
+@property(nonatomic, assign) BOOL hasAbsoluteDestination;
 
 - (instancetype) initWithURLString:(NSString *)urlString
-                 withDestination:(NSString *)destination
-                 andTotalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
-                 andChecksum:(NSString *)checksum
-                 andFileHashAlgorithm:(FileHashAlgorithm) fileHashAlgorithmInput;
+                   withDestination:(NSString *)destination
+      andTotalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWriteInput
+                       andChecksum:(NSString *)checksum
+              andFileHashAlgorithm:(FileHashAlgorithm) fileHashAlgorithmInput
+                 andIsAbsolutePath:(BOOL)isAbsoluteDestination NS_DESIGNATED_INITIALIZER;
 
 - (instancetype) initWithURL:(NSURL *)url
-                 withDestination:(NSString *)destination
-                 andTotalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
+             withDestination:(NSString *)destination
+andTotalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWriteInput
                  andChecksum:(NSString *)checksum
-                 andFileHashAlgorithm:(FileHashAlgorithm) fileHashAlgorithmInput;
+        andFileHashAlgorithm:(FileHashAlgorithm) fileHashAlgorithmInput
+           andIsAbsolutePath:(BOOL)isAbsoluteDestination NS_DESIGNATED_INITIALIZER;
 
 - (void) cleanUp;
 - (void) cleanUpWithResumableData:(NSData *)data;
-- (float) downloadingProgress;
-- (BOOL) verifyDownload;
-- (NSString *) fullErrorDescription;
-- (BOOL) isHittingErrorBecauseOffline;
-- (BOOL) isHittingErrorConnectingToServer;
+@property (NS_NONATOMIC_IOSONLY, readonly) float downloadingProgress;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL verifyDownload;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *fullErrorDescription;
+@property (NS_NONATOMIC_IOSONLY, getter=isHittingErrorBecauseOffline, readonly) BOOL hittingErrorBecauseOffline;
+@property (NS_NONATOMIC_IOSONLY, getter=isHittingErrorConnectingToServer, readonly) BOOL hittingErrorConnectingToServer;
 - (void) captureReceivedError:(NSError *)error;
 @end

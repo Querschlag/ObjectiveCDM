@@ -14,14 +14,16 @@
                    withDestination:(NSString *)destination
      andTotalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWriteInput
                        andChecksum:(NSString *)checksum
-              andFileHashAlgorithm:(FileHashAlgorithm) fileHashAlgorithmInput {
+              andFileHashAlgorithm:(FileHashAlgorithm) fileHashAlgorithmInput
+                 andIsAbsolutePath:(BOOL)isAbsoluteDestination {
     self = [super init];
     if(self) {
         [self commonInstructor:urlString
                withDestination:destination
  andTotalBytesExpectedToWrite:totalBytesExpectedToWriteInput
                    andChecksum:checksum
-          andFileHashAlgorithm:fileHashAlgorithmInput];
+          andFileHashAlgorithm:fileHashAlgorithmInput
+             andIsAbsolutePath:isAbsoluteDestination];
         self.url = [[NSURL alloc] initWithString:urlString];
     }//end if
     return self;
@@ -31,14 +33,16 @@
              withDestination:(NSString *)destination
 andTotalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWriteInput
                  andChecksum:(NSString *)checksum
-        andFileHashAlgorithm:(FileHashAlgorithm) fileHashAlgorithmInput {
+        andFileHashAlgorithm:(FileHashAlgorithm) fileHashAlgorithmInput
+           andIsAbsolutePath:(BOOL)isAbsoluteDestination {
     self = [super init];
     if(self) {
         [self commonInstructor:[url absoluteString]
                withDestination:destination
  andTotalBytesExpectedToWrite:totalBytesExpectedToWriteInput
                    andChecksum:checksum
-          andFileHashAlgorithm:fileHashAlgorithmInput];
+          andFileHashAlgorithm:fileHashAlgorithmInput
+             andIsAbsolutePath:isAbsoluteDestination];
         self.url = url;
     }
     
@@ -49,17 +53,22 @@ andTotalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWriteInput
           withDestination:(NSString *)destination
 andTotalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWriteInput
               andChecksum:(NSString *)checksum
-     andFileHashAlgorithm:(FileHashAlgorithm)algorithm {
+     andFileHashAlgorithm:(FileHashAlgorithm)algorithm
+        andIsAbsolutePath:(BOOL)isAbsoluteDestination{
     self.completed = NO;
     self.totalBytesWritten = 0;
     self.totalBytesExpectedToWrite = totalBytesExpectedToWriteInput;
     self.urlString = urlString;
     self.checkSum = checksum;
+    self.hasAbsoluteDestination = isAbsoluteDestination;
     fileHashAlgorithm = algorithm;
    
-    
-    NSString *documentDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    self.destination = [NSString stringWithFormat:@"%@/%@", documentDirectory, destination];
+    if (!self.hasAbsoluteDestination) {
+        NSString *documentDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+        self.destination = [NSString stringWithFormat:@"%@/%@", documentDirectory, destination];
+    } else {
+        self.destination = destination;
+    }
     self.fileName = [self.destination lastPathComponent];
     [self prepareFolderForDestination];
 }
@@ -113,7 +122,7 @@ andTotalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWriteInput
     } else { // check for file size
         NSError *attributesError;
         NSDictionary *fileAttributes = [fileManager attributesOfItemAtPath:self.destination error:&attributesError];
-        NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
+        NSNumber *fileSizeNumber = fileAttributes[NSFileSize];
         int64_t fileSize = [fileSizeNumber longLongValue];
         isVerified = (fileSize == self.totalBytesExpectedToWrite);
     }

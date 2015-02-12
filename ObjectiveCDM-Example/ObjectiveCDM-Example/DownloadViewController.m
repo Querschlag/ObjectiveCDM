@@ -15,23 +15,27 @@
 
 @implementation DownloadViewController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
+        NSString *applicationSupportPath = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES)[0];
+        NSString *downloadPath = [applicationSupportPath stringByAppendingPathComponent:@"/Download"];
+
         downloadLogs = [[NSMutableArray alloc] initWithArray:@[]];
         downloadTaskInfos = @[
             @{
                 @"url": [NSURL URLWithString:@"http://87.76.16.10/test10.zip"],
                 @"destination": @"test/test10.zip",
-                @"fileSize": [NSNumber numberWithLongLong:11536384],
+                @"fileSize": @11536384LL,
                 @"checksum": @"5e8bbbb38d137432ce0c8029da83e52e635c7a4f",
                 @"identifier": @"Content-1001"
             }
             , @{
                 @"url": @"http://www.colorado.edu/conflict/peace/download/peace.zip",
-                @"destination": @"test/peace.zip",
-                @"fileSize": [NSNumber numberWithLongLong:627874],
+                @"destination": [downloadPath stringByAppendingPathComponent:@"peace.zip"],
+                @"isAbsoluteDestination": @(YES),
+                @"fileSize": @627874LL,
                 @"checksum": @"0c0fe2686a45b3607dbb47690eadb89065341e95",
                 @"identifier": @"Content-1002",
                 @"progress": @0,
@@ -40,7 +44,7 @@
             @{
                 @"url": @"http://www.colorado.edu/conflict/peace/download/peace_problem.ZIP",
                 @"destination": @"test/peace_problem.zip",
-                @"fileSize": [NSNumber numberWithLongLong:294093],
+                @"fileSize": @294093LL,
                 @"checksum": @"d742448fd7c9a17e879441a29a4b32c4a928b9cf",
                 @"identifier": @"Content-1003",
                 @"progress": @0,
@@ -49,7 +53,7 @@
             @{
                 @"url": @"https://archive.org/download/BreakbeatSamplePack1-8zip/BreakPack5.zip",
                 @"destination": @"test/BreakPack5.zip",
-                @"fileSize": [NSNumber numberWithLongLong:5366561],
+                @"fileSize": @5366561LL,
                 @"checksum": @"4b18f3bbe5d0b7b6aa6b44e11ecaf303d442a7e5",
                 @"identifier": @"Content-1004",
                 @"progress": @0,
@@ -58,7 +62,7 @@
             @{
                 @"url": @"http://speedtest.dal01.softlayer.com/downloads/test100.zip",
                 @"destination": @"test/test100.zip",
-                @"fileSize": [NSNumber numberWithLongLong:104874307],
+                @"fileSize": @104874307LL,
                 @"checksum": @"592b849861f8d5d9d75bda5d739421d88e264900",
                 @"identifier": @"Content-1005",
                 @"progress": @0,
@@ -67,7 +71,7 @@
             @{
                 @"url": @"http://www.colorado.edu/conflict/peace/download/peace_treatment.ZIP",
                 @"destination": @"test/peace_treatment.zip",
-                @"fileSize": [NSNumber numberWithLongLong:523193],
+                @"fileSize": @523193LL,
                 @"checksum": @"60180da39e4bf4d16bd453eb6f6c6d97082ac47a",
                 @"identifier": @"Content-1006",
                 @"progress": @0,
@@ -203,7 +207,7 @@
         NSString *url = [textField text];
         if([self isValidURL:url]) {
             NSArray *parts = [url componentsSeparatedByString:@"/"];
-            NSString *filename = [parts objectAtIndex:[parts count]-1];
+            NSString *filename = parts[[parts count]-1];
             [[ObjectiveCDM sharedInstance] addDownloadTask:@{@"url": url, @"destination": [NSString stringWithFormat:@"test/%@", filename]}];
             objectiveCDMDownloadingTasks = [_objectiveCDM downloadingTasks];
             [individualProgressViewsContainer reloadData];

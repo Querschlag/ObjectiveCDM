@@ -39,6 +39,13 @@
     if(taskInfo[@"fileSize"]) {
         totalExpectedToWrite = [(NSNumber *)taskInfo[@"fileSize"] longLongValue];
     }
+
+    BOOL isAbsoluteDestination = NO;
+    NSNumber *flag = taskInfo[@"isAbsoluteDestination"];
+    if (flag) {
+        isAbsoluteDestination = flag.boolValue;
+    }
+
     if([self isTaskExistWithURL:urlString andDestination:destination] == NO) {
         ObjectiveCDMDownloadTask *downloadTask = nil;
         if(isURLString) {
@@ -47,15 +54,16 @@
                                   withDestination:destination
                     andTotalBytesExpectedToWrite:totalExpectedToWrite
                                       andChecksum:taskInfo[@"checksum"]
-                              andFileHashAlgorithm:fileHashAlgorithm];
+                              andFileHashAlgorithm:fileHashAlgorithm
+                            andIsAbsolutePath:isAbsoluteDestination];
         } else {
             downloadTask = [[ObjectiveCDMDownloadTask alloc]
                             initWithURL:taskInfo[@"url"]
                               withDestination:destination
                 andTotalBytesExpectedToWrite:totalExpectedToWrite
                                   andChecksum:taskInfo[@"checksum"]
-                         andFileHashAlgorithm:fileHashAlgorithm];
-;
+                         andFileHashAlgorithm:fileHashAlgorithm
+                            andIsAbsolutePath:isAbsoluteDestination];
         }//end else
         if(taskInfo[@"identifier"]) {
             downloadTask.identifier = taskInfo[@"identifier"];
@@ -192,8 +200,8 @@
     }//end for
     
     return @{
-        @"totalDownloadedBytes": [NSNumber numberWithLongLong:totalDownloadedBytes],
-        @"totalToBeReceivedBytes": [NSNumber numberWithLongLong:totalBytesExpectedToReceive]
+        @"totalDownloadedBytes": @(totalDownloadedBytes),
+        @"totalToBeReceivedBytes": @(totalBytesExpectedToReceive)
     };
 }
 
